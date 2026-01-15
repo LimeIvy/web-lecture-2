@@ -1,20 +1,56 @@
 import { useState } from "react";
 import { mockCurrentUser } from "../mocks/user";
+import type { PostType } from "../types/post";
 
-export const PostForm = () => {
+type PostFormProps = {
+  onPostCreated?: (newPost: PostType) => void;
+};
+
+export const PostForm = ({ onPostCreated }: PostFormProps) => {
   const [content, setContent] = useState("");
-  const { icon: userIcon } = mockCurrentUser;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { icon: userIcon, id: userId } = mockCurrentUser;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmedContent = content.trim();
     if (!trimmedContent) {
       alert("投稿内容を入力してください。");
       return;
     }
 
-    console.log("投稿内容:", trimmedContent);
-    setContent("");
-    alert("投稿しました！");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: trimmedContent,
+          userId: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "投稿に失敗しました");
+      }
+
+      const newPost = await response.json();
+      setContent("");
+      
+      if (onPostCreated) {
+        onPostCreated(newPost);
+      }
+      
+      alert("投稿しました！");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      alert(error instanceof Error ? error.message : "投稿に失敗しました");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -23,7 +59,7 @@ export const PostForm = () => {
         <div className="mr-4 flex-shrink-0">
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-700">
             <img
-              src={userIcon}
+              src={userIcon || ""}
               alt="user icon"
               className="h-full w-full object-cover"
               onError={(e) => {
@@ -45,9 +81,9 @@ export const PostForm = () => {
             <button
               className="cursor-pointer rounded-full bg-white px-4 py-1.5 font-bold text-black transition-colors enabled:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-default"
               onClick={handleSubmit}
-              disabled={!content.trim()}
+              disabled={!content.trim() || isSubmitting}
             >
-              ポストする
+              {isSubmitting ? "投稿中..." : "ポストする"}
             </button>
           </div>
         </div>

@@ -31,6 +31,10 @@ function App() {
     fetchPosts();
   }, []);
 
+  const handlePostCreated = (newPost: PostType) => {
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
   return (
     <div className="flex min-h-screen justify-center bg-black">
       {/* コンテンツラッパー */}
@@ -44,7 +48,7 @@ function App() {
         <div className="min-h-screen w-full max-w-[600px] border-x border-gray-800">
           <Header title="おすすめ" />
           {/* 投稿フォーム */}
-          <PostForm />
+          <PostForm onPostCreated={handlePostCreated} />
           {/* 投稿一覧 */}
           {loading ? (
             <div className="flex items-center justify-center p-8">
