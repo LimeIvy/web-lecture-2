@@ -23,7 +23,7 @@ export const PostForm = () => {
         <div className="mr-4 flex-shrink-0">
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-700">
             <img
-              src={userIcon}
+              src={userIcon || ""}
               alt="user icon"
               className="h-full w-full object-cover"
               onError={(e) => {
