@@ -1,7 +1,7 @@
 export type PostType = {
   id: string;
   content: string;
-  createdAt: string;
+  created_at: string;
   user: {
     id: string;
     name: string;

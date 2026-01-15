@@ -43,7 +43,7 @@ const Post = ({ posts }: PostProps) => {
                   {post.user.name}
                 </span>
                 <span className="text-gray-500">
-                  {formatTimeAgo(post.createdAt)}
+                  {formatTimeAgo(post.created_at)}
                 </span>
               </div>
 
